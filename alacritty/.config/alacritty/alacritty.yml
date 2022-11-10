@@ -1,0 +1,21 @@
+env:
+  TERM: xterm-256color
+
+font:
+  normal:
+    family: JetBrainsMono Nerd Font
+    style: Regular
+
+  size: 10
+
+window:
+  padding:
+    x: 4
+    y: 4
+
+  opacity: 0.95
+
+# Import the colorscheme of your desier.
+# Look into ~/.config/alacritty/ for more colorschemes.
+import:
+  - ~/.config/alacritty/catppuccin.yml
