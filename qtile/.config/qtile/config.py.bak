@@ -1,0 +1,689 @@
+import os
+import subprocess
+from typing import Any, Optional
+
+from libqtile import bar, extension, hook, layout, widget
+from libqtile.config import (
+    Click,
+    Drag,
+    DropDown,
+    Group,
+    Key,
+    KeyChord,
+    Match,
+    ScratchPad,
+    Screen,
+)
+from libqtile.lazy import lazy
+from libqtile.utils import guess_terminal
+
+
+class ColorScheme:
+    def __init__(
+        self,
+        bg: str,
+        bright_bg: str,
+        fg: str,
+        bright_fg: str,
+        grey: str,
+        blue: str,
+        green: str,
+        magenta: str,
+        red: str,
+        yellow: str,
+    ):
+        self.bg = bg
+        self.bright_bg = bright_bg
+        self.fg = fg
+        self.bright_fg = bright_fg
+        self.grey = grey
+        self.blue = blue
+        self.green = green
+        self.magenta = magenta
+        self.red = red
+        self.yellow = yellow
+
+    @staticmethod
+    def challenger_deep() -> "ColorScheme":
+        return ColorScheme(
+            bg="#12111E",
+            bright_bg="#1E1C31",
+            fg="#B2B2B2",
+            bright_fg="#CBE3E7",
+            grey="#6c71c4",
+            blue="#63F2F1",
+            green="#95FFA4",
+            magenta="#C991E1",
+            red="#FF8080",
+            yellow="#FFE9AA",
+        )
+
+    @staticmethod
+    def custom_ayu_dark() -> "ColorScheme":
+        return ColorScheme(
+            bg="#0A0E14",
+            bright_bg="#0D1016",
+            fg="#B3B1AD",
+            bright_fg="#E0DED9",
+            grey="#39BAE6",
+            blue="#95E6CB",
+            green="#C2D94C",
+            magenta="#F07178",
+            red="#F29668",
+            yellow="#FFEE99",
+        )
+
+
+class Terminal:
+    def __init__(self, terminal: str, class_flag: str, cmd_flag: str):
+        self.terminal = terminal
+        self.class_flag = class_flag
+        self.cmd_flag = cmd_flag
+
+    def spawn(self, cls: Optional[str] = None, cmd: Optional[str] = None):
+        return lazy.spawn(self.construct_cmd(cls=cls, cmd=cmd))
+
+    def construct_cmd(
+        self, cls: Optional[str] = None, cmd: Optional[str] = None
+    ) -> str:
+        spawn_command = self.terminal
+        if cls:
+            spawn_command += " " + self.class_flag + " " + cls
+        if cmd:
+            spawn_command += " " + self.cmd_flag + " " + cmd
+        return spawn_command
+
+    @staticmethod
+    def alacritty() -> "Terminal":
+        return Terminal("alacritty", class_flag="--class", cmd_flag="-e")
+
+    @staticmethod
+    def guess() -> "Terminal":
+        return Terminal(guess_terminal(), class_flag="--class", cmd_flag="-e")
+
+
+class SP:
+    count = 0
+
+    def __init__(self, key: str, cmd: str, settings: dict[str, Any]):
+        self.key = key
+        self.cmd = cmd
+        self.settings = settings
+        self.name = "ScratchPad" + str(SP.count)
+        SP.count += 1
+
+
+bar_size = 16
+terminal = Terminal(
+    os.getenv("TERMINAL") or "xterm", class_flag="--class", cmd_flag="-e"
+)
+normal_browser = os.getenv("BROWSER") or "firefox"
+# code_browser = "qutebrowser"
+code_browser = normal_browser
+privacy_browser = "torbrowser-launcher"
+cs = ColorScheme.challenger_deep()
+editor = os.getenv("VISUAL") or terminal.construct_cmd(cmd=os.getenv("EDITOR") or "vim")
+font = "JetBrainsMono Nerd Font"
+font_size = 12
+mod = "mod4"
+scratchpad_mask = [mod, "shift"]
+workspaces = [
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "floating"}),
+    (None, {"layout": "max"}),
+    (None, {"layout": "max"}),
+]
+
+
+def launch_web_browser(qtile):
+    if qtile.current_group.name == "9":
+        qtile.cmd_spawn(privacy_browser)
+    elif qtile.current_group.name in ["8", "7", "6"]:
+        qtile.cmd_spawn(normal_browser)
+    else:
+        qtile.cmd_spawn(code_browser)
+
+
+dmenu = {
+    "background": cs.bg,
+    "dmenu_height": bar_size,
+    "dmenu_ignorecase": True,
+    "dmenu_prompt": ">> ",
+    "dmenu_font": "xft:{font}:family={font}:pixelsize={fontsize}:weight=regular:antialias=true:hinting=true".format(
+        font=font, fontsize=font_size
+    ),
+    "foreground": cs.fg,
+    "selected_background": cs.yellow,
+    "selected_foreground": cs.bright_bg,
+}
+
+dropdown_settings = {
+    "x": 0.05,
+    "y": 0.05,
+    "width": 0.90,
+    "height": 0.90,
+    "opacity": 1,
+}
+
+scratchpads = [
+    SP("a", terminal.construct_cmd(cmd="tmux -u"), dropdown_settings),
+    SP("s", terminal.construct_cmd(cmd="pulsemixer"), dropdown_settings),
+    SP("d", terminal.construct_cmd(cmd="ranger"), dropdown_settings),
+    SP("m", terminal.construct_cmd(cmd="ncmpcpp"), dropdown_settings),
+    SP("p", terminal.construct_cmd(cmd="htop"), dropdown_settings),
+    SP("n", terminal.construct_cmd(cmd="newsboat"), dropdown_settings),
+    SP("b", terminal.construct_cmd(cmd="podboat"), dropdown_settings),
+]
+
+keys = [
+    # applications
+    Key(
+        [mod], "Return", terminal.spawn(cmd="tmux -u"), desc="Launch terminal with tmux"
+    ),
+    Key([mod], "a", terminal.spawn(), desc="Launch terminal"),
+    Key([mod], "w", lazy.function(launch_web_browser), desc="Launch web browser"),
+    Key([mod], "e", lazy.spawn(editor), desc="Launch text editor"),
+    Key([mod], "v", lazy.spawn("virtualbox"), desc="Launch virtualbox"),
+    Key([mod], "d", lazy.spawn("pcmanfm"), desc="Launch PCManFM"),
+    # menu
+    Key(
+        [mod],
+        "r",
+        # lazy.run_extension(extension.DmenuRun(**dmenu)),
+        lazy.spawn("rofi -show run"),
+        desc="Launch run menu",
+    ),
+    Key(
+        [mod, "shift"],
+        "w",
+        lazy.run_extension(
+            extension.WindowList(
+                **dmenu, dmenu_lines=12, item_format="{id} : {group} : {window}"
+            )
+        ),
+        desc="List all windows",
+    ),
+    # navigation
+    Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
+    Key([mod, "shift"], "Tab", lazy.next_screen(), desc="Focus next screen"),
+    Key(
+        [mod],
+        "Tab",
+        lazy.layout.next(),
+        desc="Switch window focus to other pane(s) of stack",
+    ),
+    Key([mod], "h", lazy.layout.left(), desc="Move focus left in stack pane"),
+    Key([mod], "j", lazy.layout.down(), desc="Move focus down in stack pane"),
+    Key([mod], "k", lazy.layout.up(), desc="Move focus up in stack pane"),
+    Key([mod], "l", lazy.layout.right(), desc="Move focus right in stack pane"),
+    Key(
+        [mod, "shift"],
+        "j",
+        lazy.layout.shuffle_down(),
+        desc="Move window down in current stack",
+    ),
+    Key(
+        [mod, "shift"],
+        "k",
+        lazy.layout.shuffle_up(),
+        desc="Move window up in current stack",
+    ),
+    Key(
+        [mod, "shift"],
+        "h",
+        lazy.layout.client_to_previous(),
+        desc="Move window to the previous stack"
+    ),
+    Key(
+        [mod, "shift"],
+        "l",
+        lazy.layout.client_to_next(),
+        desc="Move window to the next stack"
+    ),
+    Key(
+        [mod, "shift"],
+        "space",
+        lazy.layout.swap_main(),
+        desc="Swap current pane with main pane",
+    ),
+    # windows
+    Key(
+        [mod],
+        "t",
+        lazy.window.toggle_floating(),
+        desc="Toggle floating of focused window",
+    ),
+    # layouts
+    Key([mod], "i", lazy.next_layout(), desc="Toggle through layouts"),
+    Key([mod, "control"], "j", lazy.layout.shrink(), desc="Shrink size of window"),
+    Key([mod, "control"], "k", lazy.layout.grow(), desc="Grow size of window"),
+    Key(
+        [mod, "control"],
+        "h",
+        lazy.layout.shrink_main(),
+        desc="Shrink size of main window",
+    ),
+    Key(
+        [mod, "control"], "l", lazy.layout.grow_main(), desc="Grow size of main window"
+    ),
+    # qtile
+    Key([mod, "shift", "control"], "r", lazy.restart(), desc="Restart qtile"),
+    Key([mod, "shift", "control"], "q", lazy.shutdown(), desc="Shutdown qtile"),
+    Key([mod], "s", lazy.spawn("slock"), desc="Lock screen"),
+    # screen
+    Key(
+        [],
+        "XF86MonBrightnessDown",
+        lazy.spawn("xbacklight -dec 5"),
+        desc="Lower screen brightness by 5%",
+    ),
+    Key(
+        [],
+        "XF86MonBrightnessUp",
+        lazy.spawn("xbacklight -inc 5"),
+        desc="Raise screen brightness by 5%",
+    ),
+    # multimedia
+    Key(
+        [],
+        "XF86AudioMute",
+        lazy.spawn("amixer set Master toggle"),
+        desc="Mute or unmute sound",
+    ),
+    Key(
+        [],
+        "XF86AudioLowerVolume",
+        lazy.spawn("amixer set Master 5%- unmute"),
+        desc="Lower volume by 5%",
+    ),
+    Key(
+        [],
+        "XF86AudioRaiseVolume",
+        lazy.spawn("amixer set Master 5%+ unmute"),
+        desc="Raise volume by 5%",
+    ),
+    Key(
+        [mod],
+        "XF86AudioLowerVolume",
+        lazy.spawn("mpc volume -5"),
+        desc="Lower mpd volume by 5%",
+    ),
+    Key(
+        [mod],
+        "XF86AudioRaiseVolume",
+        lazy.spawn("mpc volume +5"),
+        desc="Raise mpd volume by 5%",
+    ),
+    Key(
+        [mod],
+        "XF86AudioPrev",
+        lazy.spawn("mpc seekthrough -00:00:05"),
+        desc="Seekthrough mpd 5 seconds back",
+    ),
+    Key(
+        [mod],
+        "XF86AudioNext",
+        lazy.spawn("mpc seekthrough +00:00:05"),
+        desc="Seekthrough mpd 5 seconds forward",
+    ),
+    Key([], "XF86AudioPrev", lazy.spawn("mpc prev"), desc="Play previous mpd track"),
+    Key([], "XF86AudioNext", lazy.spawn("mpc next"), desc="Play next mpd track"),
+    Key([], "XF86AudioPlay", lazy.spawn("mpc toggle"), desc="Toggle mpd track"),
+    Key([], "XF86AudioStop", lazy.spawn("mpc stop"), desc="Stop mpd track"),
+    Key(
+        [mod],
+        "Left",
+        lazy.spawn("mpc seekthrough -00:00:05"),
+        desc="Seekthrough mpd 5 seconds back",
+    ),
+    Key(
+        [mod],
+        "Right",
+        lazy.spawn("mpc seekthrough +00:00:05"),
+        desc="Seekthrough mpd 5 seconds forward",
+    ),
+    Key([mod], "Up", lazy.spawn("mpc next"), desc="Play next mpd track"),
+    Key([mod], "Down", lazy.spawn("mpc prev"), desc="Play previous mpd track"),
+    Key([mod, "control"], "Up", lazy.spawn("mpc toggle"), desc="Toggle mpd track"),
+    Key([mod, "control"], "Down", lazy.spawn("mpc stop"), desc="Stop mpd track"),
+    KeyChord(
+        ["control"],
+        "m",
+        [
+            Key([], "r", lazy.spawn("mpc repeat"), desc="Toggle mpd repeat mode"),
+            Key([], "z", lazy.spawn("mpc random"), desc="Toggle mpd random mode"),
+            Key([], "y", lazy.spawn("mpc single"), desc="Toggle mpd single mode"),
+            Key(
+                ["shift"],
+                "r",
+                lazy.spawn("mpc consume"),
+                desc="Toggle mpd consume mode",
+            ),
+            Key([], "p", lazy.spawn("mpc toggle"), desc="Toggle mpd play"),
+            Key([], "n", lazy.spawn("mpc next"), desc="Play next mpd track"),
+            Key([], "b", lazy.spawn("mpc prev"), desc="Play previous mpd track"),
+        ],
+    ),
+]
+
+# Drag floating layouts.
+mouse = [
+    Drag(
+        [mod],
+        "Button1",
+        lazy.window.set_position_floating(),
+        start=lazy.window.get_position(),
+    ),
+    Drag(
+        [mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()
+    ),
+    Click([mod], "Button2", lazy.window.bring_to_front()),
+]
+
+groups = []
+for i, (ws, settings) in enumerate(workspaces, 1):
+    group = Group(name=str(i) + (":" + ws if ws is not None else ""), **settings)
+    keys.append(
+        Key(
+            [mod],
+            str(i),
+            lazy.group[group.name].toscreen(),
+            desc="Switch to group {}".format(group.name),
+        )
+    )
+    keys.append(
+        Key(
+            [mod, "shift"],
+            str(i),
+            lazy.window.togroup(group.name, switch_group=False),
+            desc="Move focused window to group {}".format(group.name),
+        )
+    )
+    groups.append(group)
+
+dropdowns = []
+for i, sp in enumerate(scratchpads):
+    dropdowns.append(DropDown(sp.name, sp.cmd, **sp.settings))
+    keys.append(
+        Key(
+            scratchpad_mask.copy(),
+            sp.key,
+            lazy.group["scratchpad"].dropdown_toggle(sp.name),
+            desc="Launch scratchpad {}".format(sp.cmd),
+        )
+    )
+groups.append(ScratchPad("scratchpad", dropdowns))
+
+layout_theme = {
+    "margin": 0,
+    "border_width": 1,
+    "border_focus": cs.blue,
+    "border_normal": cs.bg,
+}
+layouts = [
+    layout.Max(**layout_theme),
+    layout.Stack(**layout_theme, num_stacks=2),
+    # layout.Bsp(**layout_theme),
+    # layout.Columns(**layout_theme),
+    # layout.Matrix(**layout_theme),
+    layout.MonadTall(**layout_theme),
+    layout.MonadWide(**layout_theme),
+    layout.RatioTile(**layout_theme),
+    # layout.Tile(**layout_theme),
+    # layout.TreeTab(**layout_theme),
+    # layout.VerticalTile(**layout_theme),
+    layout.Zoomy(**layout_theme),
+    layout.Floating(**(layout_theme | {"border_focus": cs.magenta})),
+]
+
+widget_defaults = {
+    "font": font,
+    "fontsize": font_size,
+    "padding": 5,
+}
+
+extension_defaults = widget_defaults.copy()
+
+
+def create_seperator():
+    return [
+        widget.Sep(
+            linewidth=0,
+            padding=6,
+            foreground=cs.fg,
+            background=cs.bg,
+        )
+    ]
+
+
+def create_group_box():
+    return [
+        widget.GroupBox(
+            fontsize=10,
+            margin_y=3,
+            margin_x=0,
+            padding_y=5,
+            padding_x=2,
+            borderwidth=3,
+            active=cs.bright_fg,
+            inactive=cs.bright_fg,
+            rounded=False,
+            hide_unused=True,
+            highlight_color=cs.bright_bg,
+            highlight_method="line",
+            this_current_screen_border=cs.red,
+            this_screen_border=cs.magenta,
+            other_current_screen_border=cs.blue,
+            other_screen_border=cs.grey,
+            foreground=cs.bright_fg,
+            background=cs.bg,
+        )
+    ]
+
+
+def create_window_name():
+    return [widget.WindowName(foreground=cs.magenta, background=cs.bg, padding=0)]
+
+
+def create_mpd():
+    return [
+        widget.Mpd2(
+            play_states={"pause": "", "play": "", "stop": ""},
+            foreground=cs.bright_bg,
+            background=cs.grey,
+        )
+    ]
+
+
+def create_kernel():
+    return [
+        widget.TextBox(
+            text=" "
+            + subprocess.check_output("uname -r", shell=True).decode().split("\n")[0],
+            foreground=cs.bright_bg,
+            background=cs.yellow,
+        )
+    ]
+
+
+def create_net(background):
+    return [
+        widget.Net(
+            format="{down} ↓↑ {up}",
+            foreground=cs.bright_bg,
+            background=cs.blue,
+        )
+    ]
+
+
+def create_cpu(background):
+    return [
+        widget.CPU(
+            format=" {load_percent}%",
+            foreground=cs.bright_bg,
+            background=cs.red,
+        )
+    ]
+
+
+def create_memory(background):
+    return [
+        widget.Memory(
+            foreground=cs.bright_bg,
+            background=cs.green,
+            format=" {MemUsed}M",
+        )
+    ]
+
+
+def create_volume(background):
+    return [
+        widget.TextBox(
+            text="",
+            foreground=cs.bright_bg,
+            background=cs.magenta,
+        ),
+        widget.Volume(foreground=cs.bright_bg, background=cs.magenta),
+        # widget.PulseVolume(foreground=cs.bright_bg, background=cs.magenta),
+    ]
+
+
+def create_battery():
+    return [
+        widget.Battery(
+            format="{char} {percent:2.0%} {hour:d}:{min:02d}",
+            charge_char=" ",
+            full_char=" ",
+            discharge_char=" ",
+            empty_char=" ",
+            foreground=cs.bright_bg,
+            background=cs.grey,
+        )
+    ]
+
+
+def create_current_layout(background):
+    return [widget.CurrentLayout(foreground=cs.bright_bg, background=cs.yellow)]
+
+
+def create_anchor(background):
+    return [
+        widget.GenPollText(
+            foreground=cs.bright_bg,
+            background=cs.blue,
+            func=lambda: " " + subprocess.check_output("curl -s https://am.i.mullvad.net/city", shell=True).decode().split("\n")[0],
+            update_interval=600,
+        )
+    ]
+
+
+def create_keyboard_layout():
+    return [
+        widget.KeyboardLayout(
+            foreground=cs.bright_bg,
+            background=cs.red,
+            configured_keyboards=["tr", "no", "us", "ru"],
+        )
+    ]
+
+
+def create_systray():
+    return [widget.Systray(background=cs.bg)]
+
+
+def default_bar(screen_index=0) -> bar.Bar:
+    widgets = []
+    widgets.extend(create_seperator())
+    widgets.extend(create_group_box())
+    widgets.extend(create_seperator())
+    widgets.extend(create_window_name())
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_mpd())
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_kernel())
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_net(0))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_cpu(1))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_memory(0))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_volume(1))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_battery())
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_current_layout(0))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_anchor(1))
+
+    widgets.extend(create_seperator())
+    widgets.extend(create_keyboard_layout())
+
+    if screen_index == 0:
+        widgets.extend(create_systray())
+    widgets.extend(create_seperator())
+
+    return bar.Bar(widgets, bar_size)
+
+
+monitors = int(
+    subprocess.check_output(
+        "xrandr --listactivemonitors | awk 'NR==1 {print $2}'", shell=True
+    ).decode()
+)
+screens = [Screen(top=default_bar(i)) for i in range(monitors)]
+
+dgroups_key_binder = None
+dgroups_app_rules = []
+main = None  # WARNING: this is deprecated and will be removed soon
+follow_mouse_focus = True
+bring_front_click = True
+cursor_warp = False
+floating_layout = layout.Floating(
+    **(layout_theme | {"border_focus": cs.red}),
+    float_rules=[
+        # Run the utility of `xprop` to see the wm class and name of an X client.
+        *layout.Floating.default_float_rules,
+        # Match(wm_class="Steam"),
+        Match(wm_class="Lxpolkit"),
+        Match(wm_class="newsboat-video"),
+        Match(wm_class="Nm-connection-editor"),
+    ],
+)
+auto_fullscreen = True
+focus_on_window_activation = "smart"
+
+# XXX: Gasp! We're lying here. In fact, nobody really uses or cares about this
+# string besides java UI toolkits; you can see several discussions on the
+# mailing lists, GitHub issues, and other WM documentation that suggest setting
+# this string if your java app doesn't work correctly. We may as well just lie
+# and say that we're a working one by default.
+#
+# We choose LG3D to maximize irony: it is a 3D non-reparenting WM written in
+# java that happens to be on java's whitelist.
+wmname = "LG3D"
+
+
+@hook.subscribe.client_new
+def transient_window(window):
+    if window.window.get_wm_transient_for():
+        window.floating = True
+
+
+@hook.subscribe.screen_change
+def restart_on_randr(qtile, ev):
+    qtile.cmd_restart()
