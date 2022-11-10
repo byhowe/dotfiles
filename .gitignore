@@ -1,3 +1,8 @@
 # nvim
 nvim/.config/nvim/plugin/*
 
+# python
+**/__pycache__/
+
+# lua
+**/.luarc.json
