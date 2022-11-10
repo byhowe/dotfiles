@@ -1,0 +1,17 @@
+[user]
+	email = 37745048+byhowe@users.noreply.github.com
+	name = Byron
+	signingkey = C7386DCCA980D849 
+[commit]
+	gpgsign = true
+[init]
+	defaultBranch = development
+[gpg]
+	program = gpg2
+[core]
+	editor = vim
+	excludesfile = ~/.gitignore
+[color]
+	pager = true
+[pager]
+	status = true
