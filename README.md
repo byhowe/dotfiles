@@ -4,8 +4,10 @@ This is a set of configuration files for various tools I use on a daily basis.
 You can take a look at how I do some of the things and incorporate them into
 your own system. :)
 
-This is my new dotfiles repository. The old one was set up using `git bare`
-repos, which was a hastle to get working on a new system. This uses `stow`.
+This is my new dotfiles repository.
+[The old one](https://github.com/byhowe/dotfiles-legacy) was set up using 
+`git bare` repos, which was a hastle to get working on a new system. This uses
+`stow`.
 
 Download the repo to your `$HOME` directory. This is important!
 ```
