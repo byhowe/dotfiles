@@ -42,7 +42,16 @@ dropdown_settings = {
 
 # (key, command, settings, description)
 scratchpads = [
-    ("a", "alacritty", {**dropdown_settings}, "Launch terminal in a scratchpad"),
+    ("a", "alacritty", {
+        **dropdown_settings,
+        "width": 0.47,
+        "x": 0.02,
+    }, "Launch terminal in a scratchpad"),
+    ("z", "alacritty", {
+        **dropdown_settings,
+        "width": 0.47,
+        "x": 0.51,
+    }, "Launch terminal in a scratchpad"),
     ("s", "alacritty -e pulsemixer", {**dropdown_settings}, "Launch sound mixer in a scratchpad"),
     ("d", "alacritty -e ranger", {**dropdown_settings}, "Launch file manager in a scratchpad"),
     ("m", "alacritty -e ncmpcpp", {
