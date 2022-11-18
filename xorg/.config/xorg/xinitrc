@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+export WINIT_X11_SCALE_FACTOR=1
+export QT_QPA_PLATFORMTHEME=qt5ct
+
+xrandr --setprovideroutputsource modesetting NVIDIA-G0
+
+xrandr_options=()
+for mon in $(xrandr --listmonitors | awk 'NR!=1 { print $4 }'); do
+  [ "$mon" = "eDP-1" ] && xrandr_options+=("--output" "eDP-1" "--primary" "--mode" "1920x1080")
+  [ "$mon" = "HDMI-1" ] && xrandr_options+=("--output" "HDMI-1" "--right-of" "eDP-1" "--mode" "1920x1080")
+  [ "$mon" = "DP-1" ] && xrandr_options+=("--output" "DP-1" "--left-of" "eDP-1" "--mode" "1366x768")
+done
+xrandr "${xrandr_options[@]}"
+
+xset s off -dpms
+xset r rate 300 50
+
+lxpolkit &
+picom --config ~/.config/picom/picom.conf &
+nitrogen --restore &
+dunst &
+nm-applet &
+# fcitx -d &
+
+# exec "${WINDOW_MANAGER:-qtile}"
+exec qtile start
+# exec awesome
+# exec xmonad run
