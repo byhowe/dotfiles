@@ -48,6 +48,11 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
+(eval-after-load "org"
+  '(require 'ox-gfm nil t))
+
+(require 'ox-extra)(ox-extras-activate '(ignore-headlines))
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Development/org/")
