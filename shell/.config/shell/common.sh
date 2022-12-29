@@ -43,6 +43,8 @@ alias ydl-video="youtube-dl -f 'bestvideo+bestaudio' --merge-output-format mp4 -
 
 alias dotfiles="git --git-dir=${HOME}/Development/Configurations/dotfiles/.git --work-tree=${HOME}"
 
+alias rclone="mullvad-exclude rclone"
+
 # usage: format <language> <dir>
 format ()
 {
