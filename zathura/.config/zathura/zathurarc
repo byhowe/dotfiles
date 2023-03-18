@@ -1,3 +1,7 @@
+# Zathura has a sandbox mode that provides a secure environment using a strict
+# seccomp filter.
+set sandbox strict
+
 # Base16 OceanicNext
 # Author: https://github.com/voronianski/oceanic-next-color-scheme
 
