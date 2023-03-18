@@ -6,7 +6,7 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
-(setq user-full-name "Byron"
+(setq user-full-name "Ömer F. Çavuş"
       user-mail-address "37745048+byhowe@users.noreply.github.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
@@ -21,8 +21,9 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "JetBrainsMono Nerd Font" :size 14 :weight 'regular)
+(setq doom-font (font-spec :family "Fira Code" :size 13 :weight 'semi-light)
       doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+(setq doom-unicode-font (font-spec :family "Fira Mono"))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -32,55 +33,35 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-oceanic-next)
+(setq doom-theme 'doom-gruvbox)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
-(use-package! websocket
-  :after org-roam)
-(use-package! org-roam-ui
-  :after org-roam
-  :config
-  (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t))
-
-(eval-after-load "org"
-  '(require 'ox-gfm nil t))
-
-(require 'ox-extra)(ox-extras-activate '(ignore-headlines))
-
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Development/org/")
-(setq org-roam-directory "~/Development/RoamNotes/")
-(setq org-roam-dailies-directory "daily/")
-(setq org-roam-dailies-capture-templates
-      '(("d" "default" entry "* %<%a, %b %e, %Y - %H%M> %?"
-         :if-new (file+head "%<%Y-%m-%d>.org" "#+title: %<%A, %B %e, %Y>\n"))))
-(setq deft-directory "~/Development/RoamNotes/")
 
-;; latex
-(setq +latex-viewers '(zathura))
+;; Org-agenda
+(after! org
+  (setq org-agenda-files '("~/Development/org" "~/Development/Projects/metu")))
 
+;; Set transparency
 (defun transparency (value)
   "Sets the transparency of the parent window, 0=transparent/100=opaque"
   (interactive "nEnter transparency value [0 - 100]: ")
   (set-frame-parameter (selected-frame) 'alpha value))
 (transparency 95)
 
+;; Do not ask to exit emacs
 (setq confirm-kill-emacs nil)
 
-(after! rustic
-  (setq rustic-lsp-server 'rust-analyzer))
+;; Set zathura as the latex viewer
+(setq +latex-viewers '(zathura))
 
-(after! ob-jupyter
-  (add-to-list 'org-babel-default-header-args:jupyter-python
-               '((:session . "py3")
-                 (:results . "both"))))
+(after! lsp-haskell
+  (setq lsp-haskell-formatting-provider "stylish-haskell"))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
