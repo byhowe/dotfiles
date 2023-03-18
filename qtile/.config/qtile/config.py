@@ -1,16 +1,18 @@
 import subprocess
+from typing import Any
 
 from libqtile import bar, layout, widget
 from libqtile.config import Click, Drag, Group, Key, KeyChord, Match, Screen, DropDown, ScratchPad
 from libqtile.lazy import lazy
 
 mod = "mod4"
-bar_size = 16
+bar_size = 18
 terminal = "alacritty"
-font = "JetBrainsMono Nerd Font"
+font = "FiraCode Nerd Font"
 font_size = 12
 
-workspaces = [
+Workspace = tuple[str, dict[str, Any]]
+workspaces: list[Workspace] = [
     ("I", { "layout": "stack" }),
     ("II", { "layout": "stack" }),
     ("III", { "layout": "stack" }),
@@ -100,8 +102,8 @@ keys = [
     Key([mod, "shift", "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "shift", "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
     # backlight
-    Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 5"), "Lower screen brightness"),
-    Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 5"), "Raise screen brightness"),
+    Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 5"), desc="Lower screen brightness"),
+    Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 5"), desc="Raise screen brightness"),
     # multimedia
     Key([], "XF86AudioMute", lazy.spawn("amixer set Master toggle"), desc="Mute or unmute sound"),
     Key([], "XF86AudioLowerVolume", lazy.spawn("amixer set Master 5%- unmute"), desc="Lower volume"),
