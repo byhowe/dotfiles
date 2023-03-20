@@ -1,5 +1,5 @@
 configuration {
   modi: "window,run,ssh,drun";
-  font: "InconsolataGo Nerd Font 12";
+  font: "FiraCode Nerd Font 12";
 }
 @theme "Arc-Dark"
