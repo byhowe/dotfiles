@@ -39,6 +39,20 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
+; Stretch cursor to the glyph width
+(setq-default x-stretch-cursor t)
+
+(setq undo-limit 80000000 ; Raise undo-limit to 80Mb
+      ; By default while in insert all changes are one big blob. Be more
+      ; granular
+      evil-want-fine-undo t
+      ; Nobody likes to loose work, I certainly don't
+      auto-save-default t
+      ; Unicode ellispis are nicer than "...", and also save /precious/ space
+      truncate-string-ellipsis "…"
+      ; It's nice to maintain a little margin
+      scroll-margin 8)
+
 ;; Your development directory
 (setq dev-dir "~/Development")
 
@@ -52,10 +66,10 @@
 (setq! bib-file (expand-file-name "catalog.bib" org-directory)
        citar-bibliography (list bib-file))
 
+(load! "ebooks" doom-user-dir)
+
 ;; Set zathura as the latex viewer
 (setq +latex-viewers '(zathura))
-
-(load! "ebooks" doom-user-dir)
 
 ;; Use `stylish-haskell` as the formatting backend
 (after! lsp-haskell
