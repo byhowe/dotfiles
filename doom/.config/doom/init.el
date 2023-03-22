@@ -33,7 +33,7 @@
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       (emoji +unicode)  ; 🙂
+       ;;(emoji +unicode)  ; 🙂
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
        indent-guides     ; highlighted indent columns
@@ -47,8 +47,9 @@
         +defaults)
        ;;tabs              ; a tab bar for Emacs
        ;;treemacs          ; a project drawer, like neotree but cooler
-       unicode           ; extended unicode support for various languages
-       (vc-gutter +pretty) ; vcs diff in the fringe
+       ;;unicode           ; extended unicode support for various languages
+       (vc-gutter        ; vcs diff in the fringe
+        +pretty)
        vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        ;;window-select     ; visually switch windows
        ;;workspaces        ; tab emulation, persistence & separate workspaces
@@ -82,9 +83,9 @@
        ;;vterm             ; the best terminal emulation in Emacs
 
        :checkers
-       syntax              ; tasing you for every semicolon you forget
-       (spell            ; tasing you for misspelling mispelling
-        +aspell)
+       ;;syntax              ; tasing you for every semicolon you forget
+       ;;(spell            ; tasing you for misspelling mispelling
+       ;; +aspell)
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
@@ -94,7 +95,7 @@
        ;;direnv
        ;;docker
        editorconfig      ; let someone else argue about tabs vs spaces
-       ein               ; tame Jupyter notebooks with emacs
+       ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
        (lookup           ; navigate your code and its documentation
@@ -174,7 +175,8 @@
         +contacts
         +pretty
         +gnuplot
-        +pandoc)
+        +noter
+        +roam2)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional

@@ -48,3 +48,8 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
+
+;; Install nov.el if +noter is enabled in org.
+(when (featurep! :lang org +noter)
+  (package! calibredb)
+  (package! nov)) ;; nov is an EPUB reader
