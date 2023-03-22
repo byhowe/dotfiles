@@ -314,7 +314,13 @@ def construct_bar(screen_num: int):
             bar_size,
         )
 
-screens = [Screen(top=construct_bar(i)) for i in range(monitors)]
+screens = [
+    Screen(
+        top=construct_bar(i),
+        wallpaper='~/.config/qtile/wallpaper.jpg',
+        wallpaper_mode='fill'
+    ) for i in range(monitors)
+]
 
 # Drag floating layouts.
 mouse = [
