@@ -6,7 +6,7 @@
 (use-package! calibredb
   :commands calibredb
   :config
-  (setq calibredb-root-dir "~/Development/Books"
+  (setq calibredb-root-dir (expand-file-name "Books" dev-dir)
         calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
         calibredb-ref-default-bibliography bib-file
         calibredb-format-all-the-icons t)

@@ -39,9 +39,12 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
+;; Your development directory
+(setq dev-dir "~/Development")
+
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Development/Org/"
+(setq org-directory (expand-file-name "Org" dev-dir)
       org-noter-always-create-frame nil
       org-roam-directory org-directory
       org-roam-dailies-directory "Daily")
