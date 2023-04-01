@@ -1,8 +1,18 @@
 import subprocess
 from typing import Any
 
-from libqtile import bar, layout, widget
-from libqtile.config import Click, Drag, Group, Key, KeyChord, Match, Screen, DropDown, ScratchPad
+from libqtile import bar, layout, widget, hook
+from libqtile.config import (
+    Click,
+    Drag,
+    Group,
+    Key,
+    KeyChord,
+    Match,
+    Screen,
+    DropDown,
+    ScratchPad,
+)
 from libqtile.lazy import lazy
 
 mod = "mod4"
@@ -324,6 +334,10 @@ mouse = [
     Drag([mod], "Button3", lazy.window.set_size_floating(), start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front()),
 ]
+
+@hook.subscribe.client_focus
+def focused_client_bring_to_top(window):
+    window.bring_to_front()
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: list
