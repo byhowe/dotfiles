@@ -61,7 +61,19 @@
 (setq org-directory (expand-file-name "Org" dev-dir)
       org-noter-always-create-frame nil
       org-roam-directory org-directory
-      org-roam-dailies-directory "Daily")
+      org-roam-dailies-directory "Daily"
+      org-roam-capture-templates
+      '(("d" "default" plain "%?"
+         :target
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                    "#+title: ${title}\n#+author: %n\n")
+         :unnarrowed t))
+      org-roam-dailies-capture-templates
+      '(("d" "default" entry "* %?"
+         :if-new
+         (file+head "%<%Y-%m-%d>.org"
+                    "#+title: %<%Y-%m-%d>\n#+author: %n\n"))))
+
 
 (setq! bib-file (expand-file-name "catalog.bib" org-directory)
        citar-bibliography (list bib-file))
