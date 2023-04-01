@@ -51,3 +51,7 @@
 
 (package! calibredb)
 (package! nov) ;; nov is an EPUB reader
+
+(package! typst-mode
+  :recipe
+  (:host github :repo "Ziqi-Yang/typst-mode.el"))

@@ -83,6 +83,9 @@
 (load! "ebooks" doom-user-dir)
 (load! "latex" doom-user-dir)
 
+(use-package! typst-mode
+  :mode ("\\.typ\\'" . typst-mode))
+
 ;; Use `stylish-haskell` as the formatting backend
 (after! lsp-haskell
   (setq lsp-haskell-formatting-provider "stylish-haskell"))
