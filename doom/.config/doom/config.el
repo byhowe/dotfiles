@@ -74,14 +74,14 @@
          (file+head "%<%Y-%m-%d>.org"
                     "#+title: %<%Y-%m-%d>\n#+author: %n\n"))))
 
+(setq org-list-allow-alphabetical 't)
 
 (setq! bib-file (expand-file-name "catalog.bib" org-directory)
        citar-bibliography (list bib-file))
 
+;; Load config files
 (load! "ebooks" doom-user-dir)
-
-;; Set zathura as the latex viewer
-(setq +latex-viewers '(zathura))
+(load! "latex" doom-user-dir)
 
 ;; Use `stylish-haskell` as the formatting backend
 (after! lsp-haskell
