@@ -1,29 +1,48 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 export WINIT_X11_SCALE_FACTOR=1
-export QT_QPA_PLATFORMTHEME=qt5ct
 
-xrandr --setprovideroutputsource modesetting NVIDIA-G0
+# optimus-manager
+# Note: /usr/bin/prime-switch is called before calling startx
+# in the fish shell configuration. This is IMPORTANT.
+/usr/bin/prime-offload
 
-xrandr_options=()
-for mon in $(xrandr --listmonitors | awk 'NR!=1 { print $4 }'); do
-  [ "$mon" = "eDP-1" ] && xrandr_options+=("--output" "eDP-1" "--primary" "--mode" "1920x1080")
-  [ "$mon" = "HDMI-1" ] && xrandr_options+=("--output" "HDMI-1" "--right-of" "eDP-1" "--mode" "1920x1080")
-  [ "$mon" = "DP-1" ] && xrandr_options+=("--output" "DP-1" "--left-of" "eDP-1" "--mode" "1366x768")
-done
-xrandr "${xrandr_options[@]}"
+# Computer specific monitor settings
+gpu=$(optimus-manager --print-mode | awk '{ print $5 }')
+
+# For some reason, xrandr refuses to work if i don't call
+# it like this before actually setting the options.
+xrandr
+# NVIDIA GPU
+if [ "$gpu" = "nvidia" ]; then
+  xrandr --output "eDP-1-1" --primary --mode 1920x1080 --pos 0x0 --rotate normal \
+         --output "HDMI-1-1" --mode 1920x1080 --pos 1920x0 --rotate normal \
+         --output "DP-1-1" --off \
+         --output "HDMI-1-2" --off
+fi
+
+# Integrated GPU
+if [ "$gpu" = "integrated" ] || [ "$gpu" = "hybrid" ]; then
+  # Default driver
+  #xrandr --output "eDP-1" --mode 1920x1080 --pos 0x0 --rotate normal \
+  #       --output "HDMI-1" --mode 1920x1080 --pos 1920x0 --rotate normal \
+  #       --output "DP-1" --off \
+  #       --output "HDMI-2" --off 
+
+  # xf86-video-intel
+  xrandr --output "eDP1" --primary --mode 1920x1080 --pos 0x0 --rotate normal \
+         --output "DP1" --off --output HDMI1 --mode 1920x1080 --pos 1920x0 --rotate normal \
+         --output "HDMI2" --off \
+         --output "VIRTUAL1" --off
+fi
 
 xset s off -dpms
-xset r rate 300 50
+xset r rate 300 50 # Faster keyboard input
 
-lxpolkit &
-picom --config ~/.config/picom/picom.conf &
-nitrogen --restore &
-dunst &
-nm-applet &
-# fcitx -d &
+picom --config ~/.config/picom/picom.conf&
+dunst&
+lxpolkit&
+pcmanfm -d&
 
-# exec "${WINDOW_MANAGER:-qtile}"
-exec qtile start
-# exec awesome
-# exec xmonad run
+# Run the window manager
+qtile start
