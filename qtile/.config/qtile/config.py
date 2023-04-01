@@ -250,6 +250,25 @@ clock = lambda: widget.Clock(format="%d/%m/%y %H:%M")
 updates = lambda: widget.CheckUpdates(display_format=" {Updates}")
 systray = lambda: widget.Systray(background="#12111E")
 
+gpu_icon = lambda: None
+gpu_text = lambda: None
+try:
+    from optimus_manager.var import load_state
+    from optimus_manager.client.error_reporting import report_errors
+    optimus = load_state()
+    fatal = report_errors(optimus)
+    if not fatal:
+        gpu = optimus["current_mode"]
+        gpu_icon_filename = f"~/.config/qtile/prime-tray-{gpu}-symbolic.svg"
+
+        gpu_icon = lambda: widget.Image(filename=gpu_icon_filename)
+        gpu_text = lambda: widget.TextBox(gpu)
+
+except ImportError:
+    gpu_text = lambda: widget.TextBox("optimus-manager: ImportError")
+except:
+    gpu_text = lambda: widget.TextBox("optimus-manager: Error")
+
 # get the number of monitors.
 monitors = int(
     subprocess.check_output(
@@ -258,61 +277,38 @@ monitors = int(
 )
 
 def construct_bar(screen_num: int):
-    if screen_num == 0:
-        return bar.Bar(
-            [
-                sep(),
-                group_box(),
-                sep(),
-                window_name(),
-
-                mpd(),
-                sep(),
-                net(),
-                sep(),
-                cpu(),
-                sep(),
-                mem(),
-                sep(),
-                vol(),
-                # sep(),
-                # updates(),
-                sep(),
-                cur_lay(),
-                sep(),
-                bat(),
-                sep(),
-                clock(),
-                systray(),
-                sep(),
-            ],
-            bar_size,
-        )
-    else:
-        return bar.Bar(
-            [
-                sep(),
-                group_box(),
-                sep(),
-                window_name(),
-
-                net(),
-                sep(),
-                cpu(),
-                sep(),
-                mem(),
-                sep(),
-                vol(),
-                sep(),
-                cur_lay(),
-                sep(),
-                bat(),
-                sep(),
-                clock(),
-                sep(),
-            ],
-            bar_size,
-        )
+    widgets = [
+        sep(),
+        group_box(),
+        sep(),
+        window_name(),
+        mpd() if screen_num == 0 else None,
+        sep() if screen_num == 0 else None,
+        net(),
+        sep(),
+        cpu(),
+        sep(),
+        mem(),
+        sep(),
+        vol(),
+        # sep(),
+        # updates(),
+        sep(),
+        cur_lay(),
+        sep(),
+        bat(),
+        sep(),
+        clock(),
+        sep() if screen_num == 0 else None,
+        gpu_icon() if screen_num == 0 else None,
+        gpu_text() if screen_num == 0 else None,
+        systray() if screen_num == 0 else None,
+        sep(),
+    ]
+    return bar.Bar(
+        widgets=[item for item in widgets if item is not None],
+        size=bar_size,
+    )
 
 screens = [
     Screen(
