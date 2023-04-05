@@ -90,6 +90,10 @@
 (after! lsp-haskell
   (setq lsp-haskell-formatting-provider "stylish-haskell"))
 
+;; Use rust-analyzer
+(after! rustic
+  (setq rustic-lsp-server 'rust-analyzer))
+
 ;; Set transparency
 (defun transparency (value)
   "Sets the transparency of the parent window, 0=transparent/100=opaque"
