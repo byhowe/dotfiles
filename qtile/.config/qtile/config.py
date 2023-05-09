@@ -34,9 +34,19 @@ workspaces: list[Workspace] = [
     ("IX", { "layout": "stack" }),
 ]
 
+browser = "firefox-developer-edition -P 'arkenfox-{profile}' -new-window"
 applications = [
     ("a", "alacritty", "Launch terminal"),
-    ("w", "firefox-developer-edition", "Launch web browser"),
+    (
+        "w",
+        browser.format(profile="vpn"),
+        "Launch web browser through VPN",
+    ),
+    (
+        "o",
+        f"mullvad-exclude {browser.format(profile='clear')}",
+        "Launch web browser through split tunneling",
+    ),
     ("e", "emacs", "Launch editor"),
     ("d", "pcmanfm", "Launch file manager"),
     ("r", "rofi -show run", "Launch run menu"),
