@@ -60,6 +60,7 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory (expand-file-name "Org" dev-dir)
       org-noter-always-create-frame nil
+      org-deadline-warning-days 30
       org-roam-directory org-directory
       org-roam-dailies-directory "Daily"
       org-roam-capture-templates
