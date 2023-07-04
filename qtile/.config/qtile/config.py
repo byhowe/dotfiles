@@ -115,6 +115,8 @@ keys = [
     Key([mod, "shift"], "Return", lazy.layout.toggle_split(), desc="Toggle between split and unsplit sides of stack"),
     # Toggle floating window
     Key([mod], "t", lazy.window.toggle_floating(), desc="Toggle the floating state of the window"),
+    # Toggle fullscreen
+    Key([mod], "f", lazy.window.toggle_fullscreen(), desc="Toggle fullscreen"),
     # Toggle between different layouts as defined below
     Key([mod], "i", lazy.next_layout(), desc="Toggle between layouts"),
     # management
