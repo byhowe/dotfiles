@@ -11,7 +11,7 @@ This is my new dotfiles repository.
 
 Download the repo to your `$HOME` directory. This is important!
 ```
-$ git clone git@github.com:byhowe/dotfiles.git
+$ git clone https://github.com/byhowe/dotfiles.git
 ```
 
 Stow whichever config you like.
