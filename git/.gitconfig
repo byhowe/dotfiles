@@ -15,3 +15,5 @@
 	pager = true
 [pager]
 	status = true
+[alias]
+	lg = log --graph --decorate --oneline --all
