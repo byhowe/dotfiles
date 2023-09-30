@@ -48,10 +48,3 @@
 ;(unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
-
-(package! calibredb)
-(package! nov) ;; nov is an EPUB reader
-
-(package! typst-mode
-  :recipe
-  (:host github :repo "Ziqi-Yang/typst-mode.el"))

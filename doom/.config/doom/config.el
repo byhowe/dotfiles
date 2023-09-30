@@ -21,9 +21,9 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "Fira Code" :size 13 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-(setq doom-unicode-font (font-spec :family "Fira Mono"))
+(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13)
+      doom-unicode-font (font-spec :family "Fira Mono"))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -33,11 +33,11 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-gruvbox)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type nil)
+(setq display-line-numbers-type 'relative)
 
 ; Stretch cursor to the glyph width
 (setq-default x-stretch-cursor t)
@@ -53,47 +53,30 @@
       ; It's nice to maintain a little margin
       scroll-margin 8)
 
-;; Your development directory
+;; My development directory
 (setq dev-dir "~/Development")
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory (expand-file-name "Org" dev-dir)
-      org-noter-always-create-frame nil
-      org-deadline-warning-days 30
-      org-roam-directory org-directory
+(setq org-directory (expand-file-name "Notes/Org" dev-dir))
+
+;; Org agenda configuration
+(setq org-agenda-files `(,(expand-file-name "Courses/METU/CurrentSemester/school.org" dev-dir))
+      org-deadline-warning-days 30)
+
+;; Org roam configuration
+(setq org-roam-directory (expand-file-name "Notes/Roam" dev-dir)
       org-roam-dailies-directory "Daily"
-      org-roam-capture-templates
-      '(("d" "default" plain "%?"
-         :target
-         (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                    "#+title: ${title}\n#+author: %n\n")
-         :unnarrowed t))
       org-roam-dailies-capture-templates
       '(("d" "default" entry "* %?"
          :if-new
          (file+head "%<%Y-%m-%d>.org"
                     "#+title: %<%Y-%m-%d>\n#+author: %n\n"))))
 
-(setq org-list-allow-alphabetical 't)
-
-(setq! bib-file (expand-file-name "catalog.bib" org-directory)
-       citar-bibliography (list bib-file))
-
-;; Load config files
-(load! "ebooks" doom-user-dir)
-(load! "latex" doom-user-dir)
-
-(use-package! typst-mode
-  :mode ("\\.typ\\'" . typst-mode))
-
-;; Use `stylish-haskell` as the formatting backend
-(after! lsp-haskell
-  (setq lsp-haskell-formatting-provider "stylish-haskell"))
-
-;; Use rust-analyzer
-(after! rustic
-  (setq rustic-lsp-server 'rust-analyzer))
+;; Deft is a plugin for quickly writing notes and retrieving them later.
+(setq deft-directory (expand-file-name "Notes/Deft" dev-dir)
+      deft-extensions '("org" "txt" "md")
+      deft-recursive 't)
 
 ;; Set transparency
 (defun transparency (value)
@@ -104,6 +87,9 @@
 
 ;; Do not ask to exit emacs
 (setq confirm-kill-emacs nil)
+
+;; Use bash as the shell
+(setq shell-file-name (executable-find "bash"))
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
