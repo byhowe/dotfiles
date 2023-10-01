@@ -80,12 +80,12 @@
          :unnarrowed t
          :empty-lines-before 1))
       org-roam-dailies-capture-templates
-      '(("d" "default" entry "* %<%I:%M %p> %?"
+      '(("d" "default" entry "* %<%H:%M>: %?"
          :if-new (file+head "%<%Y-%m-%d>.org"
                             "#+title: %<%Y-%m-%d, %A>\n#+author: %n")
          :empty-lines-before 1)
         ("t" "travel log" entry
-         "* %<%Y-%m-%d, %A> %<%I:%M %p>: %^{From} -> %^{To}\n%?"
+         "* %<%b %e, %Y, %a> %<%H:%M>: %^{From} -> %^{To}\n%?"
          :if-new (file+head "travel.org"
                             "#+title: Travel Log\n#+author: %n")
          :empty-lines-before 1)))

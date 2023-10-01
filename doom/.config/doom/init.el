@@ -148,23 +148,23 @@
        ;;gdscript          ; the language you waited for
        ;;(go +lsp)         ; the hipster dialect
        ;;(graphql +lsp)    ; Give queries a REST
-       (haskell          ; a language that's lazier than I am
-        +lsp
-        +tree-sitter)
+       ;;(haskell          ; a language that's lazier than I am
+       ;; +lsp
+       ;; +tree-sitter)
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
-       (json             ; At least it ain't XML
-        +lsp
-        +tree-sitter)
+       ;;(json             ; At least it ain't XML
+       ;; +lsp
+       ;; +tree-sitter)
        ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
-       (javascript       ; all(hope(abandon(ye(who(enter(here))))))
-        +lsp
-        +tree-sitter)
+       ;;(javascript       ; all(hope(abandon(ye(who(enter(here))))))
+       ;; +lsp
+       ;; +tree-sitter)
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)
-       (latex            ; writing papers in Emacs has never been so fun
-        +latexmk
-        +lsp)
+       ;;(latex            ; writing papers in Emacs has never been so fun
+       ;; +latexmk
+       ;; +lsp)
        ;;lean              ; for folks with too much to prove
        ;;ledger            ; be audit you can be
        ;;lua               ; one-based indices? one-based indices
