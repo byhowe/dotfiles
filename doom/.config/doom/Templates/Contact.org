@@ -1,0 +1,14 @@
+* properties
+** first meeting
+%^{First meeting}t
+** email
+%^{Email|Not known}
+** phone
+%^{Phone number|Not known}
+** address
+%^{Address|Not Known}
+
+* important events
+
+* information
+%?

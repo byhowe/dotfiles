@@ -53,24 +53,42 @@
       scroll-margin 8)
 
 ;; My development directory
-(setq dev-dir "~/Development")
+(setq dev-dir "~/Development"
+      roam-dir (expand-file-name "Notes/Roam" dev-dir)
+      org-dir (expand-file-name "Notes/Org" dev-dir))
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory (expand-file-name "Notes/Org" dev-dir))
+(setq org-directory org-dir)
 
 ;; Org agenda configuration
-(setq org-agenda-files `(,(expand-file-name "Courses/METU/CurrentSemester/school.org" dev-dir))
+(setq org-agenda-files `(,(expand-file-name "school.org" roam-dir))
       org-deadline-warning-days 30)
 
 ;; Org roam configuration
-(setq org-roam-directory (expand-file-name "Notes/Roam" dev-dir)
+(setq org-roam-directory roam-dir
       org-roam-dailies-directory "Daily"
+      org-roam-capture-templates
+      `(("d" "default" plain "%?"
+         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n#+author: %n")
+         :unnarrowed t
+         :empty-lines-before 1)
+        ("c" "new contact" plain (file ,(expand-file-name "Templates/Contact.org" doom-user-dir))
+         :if-new (file+head "Contacts/${slug}.org"
+                            "#+title: ${title}")
+         :unnarrowed t
+         :empty-lines-before 1))
       org-roam-dailies-capture-templates
-      '(("d" "default" entry "* %?"
-         :if-new
-         (file+head "%<%Y-%m-%d>.org"
-                    "#+title: %<%Y-%m-%d>\n#+author: %n\n"))))
+      '(("d" "default" entry "* %<%I:%M %p> %?"
+         :if-new (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d, %A>\n#+author: %n")
+         :empty-lines-before 1)
+        ("t" "travel log" entry
+         "* %<%Y-%m-%d, %A> %<%I:%M %p>: %^{From} -> %^{To}\n%?"
+         :if-new (file+head "travel.org"
+                            "#+title: Travel Log\n#+author: %n")
+         :empty-lines-before 1)))
 
 ;; Deft is a plugin for quickly writing notes and retrieving them later.
 (setq deft-directory (expand-file-name "Notes/Deft" dev-dir)
