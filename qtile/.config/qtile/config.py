@@ -252,8 +252,8 @@ window_name = lambda: (widget.WindowName(
     padding=0,
 ))
 mpd = lambda: widget.Mpd2(play_states={"pause": "", "play": "", "stop": ""})
-net = lambda: widget.Net(format="{down}   {up}")
-cpu = lambda: widget.CPU(format=" {load_percent}%")
+net = lambda: widget.Net(format="{down:6.2f}{down_suffix:<2}   {up:6.2f}{up_suffix:<2}")
+cpu = lambda: widget.CPU(format=" {load_percent:2.1f}%")
 mem = lambda: widget.Memory(format="{MemUsed: .0f}{ms}")
 vol = lambda: (widget.Volume(
     fmt=" {}",
