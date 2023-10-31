@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-gruvbox)
+(setq doom-theme 'doom-moonlight)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -50,7 +50,7 @@
       ; Unicode ellispis are nicer than "...", and also save /precious/ space
       truncate-string-ellipsis "…"
       ; It's nice to maintain a little margin
-      scroll-margin 8)
+      scroll-margin 16)
 
 ;; My development directory
 (setq dev-dir "~/Development"
@@ -95,12 +95,12 @@
       deft-extensions '("org" "txt" "md")
       deft-recursive 't)
 
-;; Set transparency
-(defun transparency (value)
-  "Sets the transparency of the parent window, 0=transparent/100=opaque"
-  (interactive "nEnter transparency value [0 - 100]: ")
+;; Set opacity
+(defun opacity (value)
+  "Sets the opacity of the parent window, 0=transparent/100=opaque"
+  (interactive "nEnter opacity value [0 - 100]: ")
   (set-frame-parameter (selected-frame) 'alpha value))
-(transparency 95)
+(opacity 95)
 
 ;; Do not ask to exit emacs
 (setq confirm-kill-emacs nil)
