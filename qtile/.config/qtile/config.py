@@ -123,6 +123,7 @@ keys = [
     Key([mod, "shift"], "q", lazy.window.kill(), desc="Kill focused window"),
     Key([mod, "shift", "control"], "r", lazy.reload_config(), desc="Reload the config"),
     Key([mod, "shift", "control"], "q", lazy.shutdown(), desc="Shutdown Qtile"),
+    Key([mod], "s", lazy.spawn("slock"), desc="Screen lock"),
     # backlight
     Key([], "XF86MonBrightnessDown", lazy.spawn("xbacklight -dec 5"), desc="Lower screen brightness"),
     Key([], "XF86MonBrightnessUp", lazy.spawn("xbacklight -inc 5"), desc="Raise screen brightness"),
