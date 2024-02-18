@@ -1,0 +1,82 @@
+cabal-version: 2.2
+
+-- This file has been generated from package.yaml by hpack version 0.36.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           xmonad-config
+version:        0.18.0
+description:    Please see the README on GitHub at <https://github.com/byhowe/xmonad#readme>
+homepage:       https://github.com/byhowe/xmonad#readme
+bug-reports:    https://github.com/byhowe/xmonad/issues
+author:         Ömer Faruk Çavuş
+maintainer:     byhowe@proton.me
+copyright:      2024 Ömer Faruk Çavuş
+license:        BSD-3-Clause
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/byhowe/xmonad
+
+library
+  exposed-modules:
+      Config
+      Config.Keybindings
+  other-modules:
+      Paths_xmonad_config
+  autogen-modules:
+      Paths_xmonad_config
+  hs-source-dirs:
+      src
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+  build-depends:
+      X11
+    , base >=4.7 && <5
+    , containers
+    , data-default-class
+    , xmonad >=0.18
+    , xmonad-contrib >=0.18
+  default-language: Haskell2010
+
+executable xmobar
+  main-is: xmobar.hs
+  other-modules:
+      Paths_xmonad_config
+  autogen-modules:
+      Paths_xmonad_config
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      X11
+    , base >=4.7 && <5
+    , containers
+    , data-default-class
+    , xmobar
+    , xmonad >=0.18
+    , xmonad-contrib >=0.18
+  default-language: Haskell2010
+
+executable xmonad
+  main-is: xmonad.hs
+  other-modules:
+      Paths_xmonad_config
+  autogen-modules:
+      Paths_xmonad_config
+  hs-source-dirs:
+      app
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      X11
+    , base >=4.7 && <5
+    , containers
+    , data-default-class
+    , xmonad >=0.18
+    , xmonad-config
+    , xmonad-contrib >=0.18
+  default-language: Haskell2010
