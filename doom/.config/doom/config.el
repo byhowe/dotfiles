@@ -65,6 +65,14 @@
 (setq org-agenda-files `(,(expand-file-name "school.org" roam-dir))
       org-deadline-warning-days 30)
 
+(defun my/org-roam-capture-refile ()
+  (interactive)
+  (org-roam-capture- :node (org-roam-node-create)
+                     :templates '(("r" "refile" entry "* %?"
+                                   :if-new (file+head "refile.org" "#+title: Refile")
+                                   :unnarowed t
+                                   :empty-lines-before 1))))
+
 ;; Org roam configuration
 (setq org-roam-directory roam-dir
       org-roam-dailies-directory "Daily"
@@ -76,7 +84,7 @@
          :empty-lines-before 1)
         ("c" "new contact" plain (file ,(expand-file-name "Templates/Contact.org" doom-user-dir))
          :if-new (file+head "Contacts/${slug}.org"
-                            "#+title: ${title}")
+                            "#+title: ${title}\n#+filetags: :contact:")
          :unnarrowed t
          :empty-lines-before 1))
       org-roam-dailies-capture-templates
