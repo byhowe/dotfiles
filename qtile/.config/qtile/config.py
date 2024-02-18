@@ -18,7 +18,7 @@ from libqtile.lazy import lazy
 mod = "mod4"
 bar_size = 18
 terminal = "alacritty"
-font = "FiraCode Nerd Font"
+font = "JetBrainsMono Nerd Font Bold"
 font_size = 12
 
 Workspace = tuple[str, dict[str, Any]]
