@@ -60,6 +60,9 @@ picom --config ~/.config/picom/picom.conf&
 dunst&
 lxpolkit&
 pcmanfm -d&
+#~/.local/bin/xmobar&
+#nitrogen --restore&
 
 # Run the window manager
 qtile start
+#PATH="$HOME/.local/bin:$PATH" ~/.local/bin/xmonad run
