@@ -1,6 +1,6 @@
 # Zathura has a sandbox mode that provides a secure environment using a strict
 # seccomp filter.
-#set sandbox strict
+set sandbox strict
 
 # Enable system clipboard.
 set selection-clipboard clipboard
@@ -26,8 +26,8 @@ set notification-error-fg       "#EC5f67"
 set notification-warning-bg     "#1B2B34"
 set notification-warning-fg     "#EC5f67"
 
-set highlight-color             "#FAC863"
-set highlight-active-color      "#6699CC"
+# set highlight-color             "#FAC863"
+# set highlight-active-color      "#6699CC"
 
 set completion-bg               "#343D46"
 set completion-fg               "#6699CC"
