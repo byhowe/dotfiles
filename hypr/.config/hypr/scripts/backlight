@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+iDIR="$HOME/.config/mako/icons"
+
+# Get brightness as integer percent (0–100)
+get_brightness() {
+    local raw max pct
+    raw=$(brightnessctl g)
+    max=$(brightnessctl m)
+    # guard against division by zero
+    (( max > 0 )) || { echo "0"; return; }
+    pct=$(( raw * 100 / max ))
+    echo "$pct"
+}
+
+# Choose icon based on brightness quartile
+get_icon() {
+    local pct icon_idx
+    pct=$(get_brightness)
+    icon_idx=$(( pct / 20 ))
+    case "$icon_idx" in
+        0) icon="brightness-20.png"   ;;
+        1) icon="brightness-40.png"  ;;
+        2) icon="brightness-60.png"  ;;
+        3) icon="brightness-80.png"  ;;
+        *) icon="brightness-100.png"  ;;
+    esac
+    echo "$iDIR/$icon"
+}
+
+# Send a notification with current brightness
+notify_user() {
+    local pct icon
+    pct=$(get_brightness)
+    icon=$(get_icon)
+    notify-send \
+      -h string:x-canonical-private-synchronous:sys-notify \
+      -a gui/osd \
+      -u low \
+      -i "$icon" \
+      "Brightness: ${pct}%"
+}
+
+# Increase brightness by 5%, then notify
+inc_backlight() {
+    brightnessctl -e2 -n2 set 5%+ >/dev/null
+    notify_user
+}
+
+# Decrease brightness by 5%, then notify
+dec_backlight() {
+    brightnessctl -e2 -n2 set 5%- >/dev/null
+    notify_user
+}
+
+# Dispatch
+case "${1:---get}" in
+    --get) get_brightness ;;
+    --inc) inc_backlight ;;
+    --dec) dec_backlight ;;
+    *) echo "Unknown option" ;;
+esac
