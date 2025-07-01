@@ -24,6 +24,30 @@ shopt -s no_empty_cmd_completion
 # Enable history appending instead of overwriting when exiting.  #139609
 shopt -s histappend
 
+# Improve command-line editing
+shopt -s globstar         # Enable recursive globbing with **
+shopt -s nocaseglob       # Case-insensitive globbing
+shopt -s cdspell          # Correct minor typos in `cd` commands
+
+# Add a timestamp to the history file
+HISTTIMEFORMAT="%F %T "
+
+# Arch Linux PS1. I like it more.
+# PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+# Set up a history search shortcut
+bind '"\e[A": history-search-backward' # Search backward in command history
+bind '"\e[B": history-search-forward'  # Search forward in command history
+
+# Case insensitive completion
+bind "set completion-ignore-case on"
+
+# Enable fzf key bindings and fuzzy completion
+if command -v fzf > /dev/null 2>&1; then
+  source /usr/share/fzf/key-bindings.bash
+  source /usr/share/fzf/completion.bash
+fi
+
 # Save each command to the history file as it's executed.  #517342
 # This does mean sessions get interleaved when reading later on, but this
 # way the history is always up to date.  History is not synced across live
@@ -103,39 +127,19 @@ done
 # Try to keep environment pollution down, EPA loves us.
 unset use_color sh
 
-
-export GOPATH="$HOME/go"
-export PATH="$GOPATH/bin:$HOME/.local/bin:$PATH"
-
-export RUST_TOOLCHAIN="$HOME/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu"
-export PATH="$RUST_TOOLCHAIN/bin:$PATH"
-
-export ANDROID_HOME="$HOME/Android/Sdk"
-export PATH="$ANDROID_HOME/tools/bin:$PATH"
-
 # XDG
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_CACHE_HOME="$HOME/.cache"
 
 # Common programs
-export VISUAL="nvim"
-export EDITOR="nvim"
-export TERMINAL="alacritty"
-export BROWSER="firefox-developer-edition"
+export VISUAL=nvim
+export EDITOR=nvim
+export TERMINAL=alacritty
 
 # Declutter ~
 export LESSHISTFILE="-"
 export WGETRC="${XDG_CONFIG_HOME:-$HOME/.config}/wgetrc"
-export XINITRC="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/xinitrc"
-export XINITRC_STEAM="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/xinitrc_steam"
-export XINITRC_PLASMA="${XDG_CONFIG_HOME:-$HOME/.config}/xorg/xinitrc_plasma"
-
-# IM
-export GTK_IM_MODULE="fcitx"
-export QT_IM_MODULE="fcitx"
-export SDL_IM_MODULE="fcitx"
-export XMODIFIERS="@im=fcitx"
 
 # ls
 alias exa="exa --color=always --group-directories-first"
@@ -146,24 +150,6 @@ alias l="ls -lah"
 
 alias ydl-audio="youtube-dl --audio-quality 0 --extract-audio --audio-format flac"
 alias ydl-video="youtube-dl -f 'bestvideo+bestaudio' --merge-output-format mp4 --audio-quality 0"
-
-alias dotfiles="git --git-dir=${HOME}/Development/Configurations/dotfiles/.git --work-tree=${HOME}"
-
-alias rclone="mullvad-exclude rclone"
-
-# usage: format <language> <dir>
-format ()
-{
-  dir="${2:-.}"
-  if [ -d $dir ]; then
-    case $1 in
-      rust) find $dir -type d -name target -prune -o -type f -name '*.rs' -print -exec rustfmt {} \; ;;
-      haskell) find $dir -name '.stack-work' -prune -o -type f -name '*.hs' -print -exec hindent {} \; -exec stylish-haskell -i {} \; && hlint . ;;
-    esac
-  else
-    echo "'$dir' is not a valid directory"
-  fi
-}
 
 # usage: ex <file>
 ex ()
@@ -190,12 +176,3 @@ ex ()
     echo "'$1' is not a valid file"
   fi
 }
-
-test-window-manager ()
-{
-  startx "$XINITRC" -- /usr/bin/Xephyr -br -ac -noreset -screen "${1:-1600x900}" :1
-}
-
-source ~/.config/broot/launcher/bash/br
-[ -f "/home/charlie/.ghcup/env" ] && source "/home/charlie/.ghcup/env" # ghcup-env
-
