@@ -1,0 +1,27 @@
+// -*- mode: jsonc -*-
+{
+    "layer": "top",
+    "position": "top",
+    "modules-left": [
+        "tray"
+    ],
+    "modules-center": [
+        "hyprland/workspaces"
+    ],
+    "modules-right": [
+        "battery",
+        "clock"
+    ],
+    "hyprland/workspaces": {
+        "persistent-workspaces": {"*": 9}
+    },
+    "battery": {
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "format": "{capacity}% {icon}",
+        "format-time": "{H}:{m}",
+        "format-icons": ["", "", "", "", ""]
+    }
+}
