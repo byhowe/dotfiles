@@ -1,31 +1,43 @@
-;; Set up package.el to work with MELPA
-(require 'package)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
-(package-initialize)
+;; Determine cache and data roots, falling back sensibly
+(defconst my/xdg-cache-dir
+  (or (getenv "XDG_CACHE_HOME")
+      (expand-file-name ".cache/" (getenv "HOME")))
+  "Where to put Emacs cache files.")
+(defconst my/xdg-data-dir
+  (or (getenv "XDG_DATA_HOME")
+      (expand-file-name ".local/share/" (getenv "HOME")))
+  "Where to put Emacs data files.")
 
-;; Bootstrap Evil (vim emulation)
-(unless (package-installed-p 'evil)
-  (package-refresh-contents)
-  (package-install 'evil))
+;; Bootstrap straight.el
+(setq straight-base-dir my/xdg-data-dir)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name
+	"straight/repos/straight.el/bootstrap.el"
+	(or (bound-and-true-p straight-base-dir)
+	    user-emacs-directory)))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+	(url-retrieve-synchronously
+	 "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+	 'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
-;; Enable Evil
-(require 'evil)
-(evil-mode 1)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; Integration with use-package
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+(require 'use-package)
+
+;; Vim emulation with Evil
+(use-package evil
+  :config
+  (evil-mode 1))
 
 ;; Set theme
+(setq modus-themes-italic-constructs t)
 (load-theme 'modus-vivendi t)
 
 ;; turn off the startup splash screen
@@ -45,16 +57,6 @@
 (blink-cursor-mode 0) ;; disable blinking cursor
 
 (setq-default show-trailing-whitespace t) ;; highlight trailing whitespace
-
-;; Determine cache and data roots, falling back sensibly
-(defconst my/xdg-cache-dir
-  (or (getenv "XDG_CACHE_HOME")
-      (expand-file-name ".cache/" (getenv "HOME")))
-  "Where to put Emacs cache files.")
-(defconst my/xdg-data-dir
-  (or (getenv "XDG_DATA_HOME")
-      (expand-file-name ".local/share/" (getenv "HOME")))
-  "Where to put Emacs data files.")
 
 ;; Make sure those dirs exist
 (dolist (dir (list
