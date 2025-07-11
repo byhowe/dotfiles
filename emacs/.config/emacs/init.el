@@ -45,11 +45,6 @@
       inhibit-startup-echo-area-message t
       inhibit-startup-message t)
 
-;; remove unnecessary gui elements
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode 0)
-
 (global-display-line-numbers-mode 1) ;; modern line numbers
 (global-hl-line-mode 1) ;; highlight the current line
 (column-number-mode 1) ;; show column in mode line
