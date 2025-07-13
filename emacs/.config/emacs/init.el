@@ -36,15 +36,6 @@
   :config
   (evil-mode 1))
 
-;; Set theme
-(setq modus-themes-italic-constructs t)
-(load-theme 'modus-vivendi t)
-
-;; turn off the startup splash screen
-(setq inhibit-startup-screen t
-      inhibit-startup-echo-area-message t
-      inhibit-startup-message t)
-
 (global-display-line-numbers-mode 1) ;; modern line numbers
 (global-hl-line-mode 1) ;; highlight the current line
 (column-number-mode 1) ;; show column in mode line
@@ -84,29 +75,78 @@
 (use-package which-key
   :config (which-key-mode))
 
+(use-package vertico
+  :init
+  (vertico-mode +1))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package projectile
+  :init
+  (projectile-mode 1)
+  :bind (:map projectile-mode-map
+	      ("s-p" . projectile-command-map)
+	      ("C-c p" . projectile-command-map)))
+
+(use-package magit)
+
+;;(use-package company
+;;  :config
+;;  (global-company-mode 1))
+
 ;; LSP integration
 
 ;; the core package for lsp
 (use-package lsp-mode
-  :straight (:host github :repo "emacs-lsp/lsp-mode"
-		   :files (:defaults "clients/*.el"))
   :commands (lsp lsp-deferred)
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook ((rustic-mode . lsp)
+  :init (setq lsp-keymap-prefix "C-c l")
+  :hook ((rustic-mode . lsp-deferred)
 	 (lsp-mode . lsp-enable-which-key-integration)))
+  ;; :config
+  ;; ;; Additional LSP performance optimizations
+  ;; (setq lsp-completion-provider :none)  ; Use company-mode for completion
+  ;; (setq lsp-headerline-breadcrumb-enable nil)  ; Disable breadcrumb for performance
+  ;; (setq lsp-signature-auto-activate nil)  ; Disable signature help for performance
+  ;; (setq lsp-signature-render-documentation nil)
+  ;; (setq lsp-eldoc-hook nil)  ; Disable eldoc integration
+  ;; (setq lsp-modeline-code-actions-enable nil)  ; Disable modeline code actions
+  ;; (setq lsp-modeline-diagnostics-enable nil)  ; Disable modeline diagnostics
+  ;; (setq lsp-log-io nil)  ; Disable logging for performance
+  ;; (setq lsp-enable-file-watchers nil)  ; Disable file watchers for performance
+  ;; (setq lsp-enable-folding nil)  ; Disable folding for performance
+  ;; (setq lsp-enable-imenu nil)  ; Disable imenu integration for performance
+  ;; (setq lsp-enable-snippet nil))  ; Disable snippet integration
 
 ;; lsp hovers, inline docs, sideline
 (use-package lsp-ui
+  :after lsp-mode
   :commands lsp-ui-mode
-  :after lsp-mode)
+  :config
+  ;; Enable sideline diagnostics
+  (setq lsp-ui-sideline-enable t)
+  (setq lsp-ui-sideline-show-diagnostics t)
+  (setq lsp-ui-sideline-show-hover t)
+  (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-update-mode 'line)
+
+  ;; Enable ui-doc
+  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-show-with-mouse nil)
+  (setq lsp-ui-doc-use-childframe t)
+  (setq lsp-ui-doc-position 'at-point)
+  :hook (lsp-mode . lsp-ui-mode)
+  :bind (:map lsp-mode-map
+	      ("K" . lsp-ui-doc-show)))
 
 ;; Rust development environment
 (use-package rustic
   :after lsp-mode
   :mode ("\\.rs\\'" . rustic-mode)
-  :hook ((rustic-mode . lsp-deferred)
-	 (rustic-mode . cargo-minor-mode))
+  :hook ((rustic-mode . lsp-deferred))
   :config
   (setq rustic-lsp-server 'rust-analyzer
         rustic-format-on-save t)
@@ -114,5 +154,5 @@
   (rustic-cargo-use-last-stored-arguments t))
 
 (use-package cargo
-  :defer t
-  :commands cargo-minor-mode)
+  :commands cargo-minor-mode
+  :hook (rustic-mode . cargo-minor-mode))
