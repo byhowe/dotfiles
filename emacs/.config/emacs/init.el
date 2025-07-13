@@ -9,7 +9,8 @@
   "Where to put Emacs data files.")
 
 ;; Bootstrap straight.el
-(setq straight-base-dir my/xdg-data-dir)
+(setq straight-base-dir (expand-file-name "emacs" my/xdg-data-dir)
+      straight-use-package-by-default t)
 (defvar bootstrap-version)
 (let ((bootstrap-file
        (expand-file-name
@@ -28,7 +29,6 @@
 
 ;; Integration with use-package
 (straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
 (require 'use-package)
 
 ;; Vim emulation with Evil
@@ -80,3 +80,39 @@
 (setq custom-file (expand-file-name "emacs/custom.el" my/xdg-data-dir))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+(use-package which-key
+  :config (which-key-mode))
+
+;; LSP integration
+
+;; the core package for lsp
+(use-package lsp-mode
+  :straight (:host github :repo "emacs-lsp/lsp-mode"
+		   :files (:defaults "clients/*.el"))
+  :commands (lsp lsp-deferred)
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :hook ((rustic-mode . lsp)
+	 (lsp-mode . lsp-enable-which-key-integration)))
+
+;; lsp hovers, inline docs, sideline
+(use-package lsp-ui
+  :commands lsp-ui-mode
+  :after lsp-mode)
+
+;; Rust development environment
+(use-package rustic
+  :after lsp-mode
+  :mode ("\\.rs\\'" . rustic-mode)
+  :hook ((rustic-mode . lsp-deferred)
+	 (rustic-mode . cargo-minor-mode))
+  :config
+  (setq rustic-lsp-server 'rust-analyzer
+        rustic-format-on-save t)
+  :custom
+  (rustic-cargo-use-last-stored-arguments t))
+
+(use-package cargo
+  :defer t
+  :commands cargo-minor-mode)
