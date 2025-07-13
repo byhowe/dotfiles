@@ -15,14 +15,14 @@
 ;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
 ;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
 ;;   presentations or streaming.
-;; - `doom-unicode-font' -- for unicode glyphs
+;; - `doom-symbol-font' -- for symbols
 ;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
+;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
+;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -32,7 +32,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-moonlight)
+(setq doom-theme 'doom-one)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -52,56 +52,9 @@
       ; It's nice to maintain a little margin
       scroll-margin 16)
 
-;; My development directory
-(setq dev-dir "~/Development"
-      roam-dir (expand-file-name "Notes/Roam" dev-dir)
-      org-dir (expand-file-name "Notes/Org" dev-dir))
-
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory org-dir)
-
-;; Org agenda configuration
-(setq org-agenda-files `(,(expand-file-name "school.org" roam-dir))
-      org-deadline-warning-days 30)
-
-(defun my/org-roam-capture-refile ()
-  (interactive)
-  (org-roam-capture- :node (org-roam-node-create)
-                     :templates '(("r" "refile" entry "* %?"
-                                   :if-new (file+head "refile.org" "#+title: Refile")
-                                   :unnarowed t
-                                   :empty-lines-before 1))))
-
-;; Org roam configuration
-(setq org-roam-directory roam-dir
-      org-roam-dailies-directory "Daily"
-      org-roam-capture-templates
-      `(("d" "default" plain "%?"
-         :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
-                            "#+title: ${title}\n#+author: %n")
-         :unnarrowed t
-         :empty-lines-before 1)
-        ("c" "new contact" plain (file ,(expand-file-name "Templates/Contact.org" doom-user-dir))
-         :if-new (file+head "Contacts/${slug}.org"
-                            "#+title: ${title}\n#+filetags: :contact:")
-         :unnarrowed t
-         :empty-lines-before 1))
-      org-roam-dailies-capture-templates
-      '(("d" "default" entry "* %<%H:%M>: %?"
-         :if-new (file+head "%<%Y-%m-%d>.org"
-                            "#+title: %<%Y-%m-%d, %A>\n#+author: %n")
-         :empty-lines-before 1)
-        ("t" "travel log" entry
-         "* %<%b %e, %Y, %a> %<%H:%M>: %^{From} -> %^{To}\n%?"
-         :if-new (file+head "travel.org"
-                            "#+title: Travel Log\n#+author: %n")
-         :empty-lines-before 1)))
-
-;; Deft is a plugin for quickly writing notes and retrieving them later.
-(setq deft-directory (expand-file-name "Notes/Deft" dev-dir)
-      deft-extensions '("org" "txt" "md")
-      deft-recursive 't)
+(setq org-directory "~/org/")
 
 ;; Set opacity
 (defun opacity (value)
