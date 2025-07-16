@@ -388,6 +388,14 @@ require('lazy').setup({
             return diagnostic_message[diagnostic.severity]
           end,
         },
+        -- use <C-w>d to show diagnostic at cursor in a floating window.
+        float = {
+          focusable = true,
+          style = 'minimal',
+          border = 'rounded',
+          source = 'always',
+          max_width = 80,
+        },
       }
 
       local capabilities = require('blink.cmp').get_lsp_capabilities()
