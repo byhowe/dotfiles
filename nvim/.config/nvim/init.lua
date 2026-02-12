@@ -179,5 +179,15 @@ vim.opt.rtp:prepend(lazypath)
 -- [[ Plugins ]]
 
 require('lazy').setup({
-  -- require('config.plugins.telescope'),
+  {
+    "nvim-treesitter/nvim-treesitter",
+    config = function()
+      local filetypes = { "c", "lua", "markdown", "rust", "python" }
+      require("nvim-treesitter").install(filetypes)
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = filetypes,
+        callback = function() vim.treesitter.start() end,
+      })
+    end
+  }
 })
