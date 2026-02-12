@@ -9,7 +9,7 @@
 [gpg]
 	program = gpg2
 [core]
-	editor = vim
+	editor = nvim
 	excludesfile = ~/.gitignore
 	pager = delta
 [alias]
