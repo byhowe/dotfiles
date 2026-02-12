@@ -17,8 +17,6 @@ vim.o.mouse = 'a' -- enable mouse mode
 vim.o.showmode = false -- hide mode indicator
 
 -- editing experience
-vim.o.smartindent = true -- indent when starting a new line
-vim.o.breakindent = true -- wrap lines with indentation preserved
 vim.o.list = true -- show invisible characters
 vim.opt.listchars = { -- characters for invisible whitespace
   tab = '→ ',
@@ -50,6 +48,48 @@ vim.o.timeoutlen = 300
 vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
+
+-- [[ Indent Settings ]]
+
+-- Set global defaults
+vim.o.smartindent = true -- indent when starting a new line
+vim.o.breakindent = true -- wrap lines with indentation preserved
+
+-- Create augroup for indentation settings
+local indent_group = vim.api.nvim_create_augroup("FileTypeIndent", { clear = true })
+
+local global_indent_settings = {
+  tabstop = 8,
+  shiftwidth = 4,
+  softtabstop = 4,
+  expandtab = true,
+}
+
+-- Filetype-specific overrides
+local indent_settings = {
+  lua = { shiftwidth = 2, softtabstop = 2 },
+  haskell = { shiftwidth = 2, softtabstop = 2 },
+  make = { expandtab = false },
+}
+
+-- Apply global indent settings
+for opt, val in pairs(global_indent_settings) do
+  vim.o[opt] = val
+end
+
+-- Apply file type specific indent settings
+for ft, settings in pairs(indent_settings) do
+  vim.api.nvim_create_autocmd("FileType", {
+    group = indent_group,
+    pattern = ft,
+    callback = function()
+      local opts = vim.tbl_extend('force', global_indent_settings, settings or {})
+      for opt, val in pairs(opts) do
+        vim.opt_local[opt] = val
+      end
+    end,
+  })
+end
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -429,25 +469,5 @@ require('lazy').setup({
   }
 })
 
--- [[ Indent settings ]]
--- Create augroup for indentation settings
-local indent_group = vim.api.nvim_create_augroup("FileTypeIndent", { clear = true })
 
--- Set global defaults
-vim.o.tabstop = 8
-vim.o.shiftwidth = 4
-vim.o.expandtab = true
-vim.o.softtabstop = 4
-
--- Override indentation settings for specific filetypes
-vim.api.nvim_create_autocmd("FileType", {
-  group = indent_group,
-  pattern = {
-    "lua",
-  },
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.softtabstop = 2
-    vim.opt_local.expandtab = true
-  end,
 })
