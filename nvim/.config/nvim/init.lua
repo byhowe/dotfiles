@@ -1,16 +1,18 @@
+-- Neovim configuration file.
+
+-- [[ Global Settings ]]
+
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = true -- set to true if a nerd font is installed
 
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
+-- [[ General Settings ]]
 
 -- user interface appearence
---vim.o.number = true -- show absolute line numbers
+vim.o.number = true -- show absolute line numbers
 vim.o.relativenumber = true --show relative line numbers
 vim.o.cursorline = true -- highlight current line
+vim.o.colorcolumn = '80' -- highlight the 80th column
 vim.o.signcolumn = 'yes' -- show the sign column for git
 vim.o.termguicolors = true -- enable true color support
 vim.o.mouse = 'a' -- enable mouse mode
@@ -45,9 +47,9 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 
 -- Sync clipboard between OS and Neovim.
-vim.schedule(function()
-  vim.o.clipboard = 'unnamedplus'
-end)
+-- NOTE: Setting the clipboard may take some time. To reduce the startup time
+-- slighly, we schedule it to be run soon by the main event-loop.
+vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
 -- [[ Indent Settings ]]
 
@@ -91,20 +93,39 @@ for ft, settings in pairs(indent_settings) do
   })
 end
 
--- [[ Basic Keymaps ]]
---  See `:help vim.keymap.set()`
+-- [[ Basic Autocommands ]]
+--  See `:help lua-guide-autocommands`
 
+-- Highlight when yanking (copying) text
+vim.api.nvim_create_autocmd('TextYankPost', {
+  desc = 'Highlight when yanking (copying) text',
+  group = vim.api.nvim_create_augroup('my-highlight-yank', { clear = true }),
+  callback = function() vim.hl.on_yank() end,
+})
+
+-- [[ Basic Keymaps ]]
+-- See `:help vim.keymap.set()`
+
+-- When doing window splits, neovim transfers the focus to the new window. This
+-- function keeps track of the previous window and sets it as the current
+-- window after doing the window split.
+function split_keep_focus(cmd)
+  local win = vim.api.nvim_get_current_win()
+  vim.cmd(cmd)
+  vim.api.nvim_set_current_win(win)
+end
+
+-- Keybinds to make split navigation easier.
 -- Clear highlights on search when pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
 -- TIP: Disable arrow keys in normal mode
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
 vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 
--- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
@@ -112,12 +133,12 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Window splits
-vim.keymap.set('n', '<leader>wv', '<C-w>v', { desc = 'Split window vertically' })
-vim.keymap.set('n', '<leader>ws', '<C-w>s', { desc = 'Split window horizontally' })
+vim.keymap.set('n', '<leader>wv', function() split_keep_focus('vsplit') end, { desc = 'Split window vertically' })
+vim.keymap.set('n', '<leader>ws', function() split_keep_focus('split') end, { desc = 'Split window horizontally' })
 
 -- Window closing
 vim.keymap.set('n', '<leader>wd', '<C-w>c', { desc = 'Close current window' })
-vim.keymap.set('n', '<leader>wq', '<C-w>q', { desc = 'Quit current window' })
+vim.keymap.set('n', '<leader>wq', '<C-w>q', { desc = 'Quit current window' }) -- quits neovim if it is the last window
 vim.keymap.set('n', '<leader>wo', '<C-w>o', { desc = 'Close all other windows' })
 
 -- Shift highlighted regions up and down
@@ -132,19 +153,13 @@ vim.keymap.set('n', '<leader>fe', '<cmd>Ex<CR>', { desc = 'Open file explorer' }
 vim.keymap.set('n', 'n', 'nzzzv')
 vim.keymap.set('n', 'N', 'Nzzzv')
 
--- [[ Basic Autocommands ]]
---  See `:help lua-guide-autocommands`
+-- Visual line navigation
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 
--- Highlight when yanking (copying) text
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.hl.on_yank()
-  end,
-})
+-- [[ Plugin Manager ]]
 
--- [[ Install `lazy.nvim` plugin manager ]]
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
