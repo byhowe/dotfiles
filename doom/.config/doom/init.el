@@ -119,7 +119,7 @@
 
        (latex +cdlatex +fold)
        (markdown +tree-sitter)
-       org
+       (org +roam +pretty +noter +pandoc)
 
        :email
        ;;mu4e
