@@ -72,7 +72,7 @@
 
        :checkers
        (syntax +childframe +flymake +icons)
-       (spell +hunspell +everywhere)
+       (spell +hunspell)
        ;;grammar
 
        :tools
@@ -84,7 +84,7 @@
        magit
        direnv
        pdf
-       biblio
+       ;;biblio
        ;;ansible
        ;;collab
        ;;debugger
