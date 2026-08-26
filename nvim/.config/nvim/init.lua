@@ -189,5 +189,17 @@ require('lazy').setup({
         callback = function() vim.treesitter.start() end,
       })
     end
+  },
+  {
+    "NeogitOrg/neogit",
+    lazy = true,
+    dependencies = {
+      "esmuellert/codediff.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    cmd = "Neogit",
+    keys = {
+      { "<leader>gg", "<cmd>Neogit<cr>", desc = "Show Neogit UI" }
+    }
   }
 })
