@@ -1,5 +1,3 @@
--- Neovim configuration file.
-
 -- [[ Global Settings ]]
 
 vim.g.mapleader = ' '
@@ -12,19 +10,16 @@ vim.g.have_nerd_font = true -- set to true if a nerd font is installed
 vim.o.number = true -- show absolute line numbers
 vim.o.relativenumber = true --show relative line numbers
 vim.o.cursorline = true -- highlight current line
-vim.o.colorcolumn = '80' -- highlight the 80th column
+vim.o.colorcolumn = '100' -- highlight column 100
 vim.o.signcolumn = 'yes' -- show the sign column for git
 vim.o.termguicolors = true -- enable true color support
-vim.o.mouse = 'a' -- enable mouse mode
+vim.o.mouse = '' -- disable mouse mode
 vim.o.showmode = false -- hide mode indicator
+vim.cmd.colorscheme("catppuccin")
 
 -- editing experience
 vim.o.list = true -- show invisible characters
-vim.opt.listchars = { -- characters for invisible whitespace
-  tab = '→ ',
-  trail = '•',
-  nbsp = '␣'
-}
+vim.opt.listchars = { tab = '» ', trail = '•', nbsp = '␣' }
 vim.o.scrolloff = 16 -- minimum lines above/below cursor when scrolling
 
 -- window management
@@ -131,6 +126,11 @@ vim.keymap.set('n', '<leader>wh', '<C-w><C-h>', { desc = 'Move focus to the left
 vim.keymap.set('n', '<leader>wl', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<leader>wj', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<leader>wk', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- Window splits
 vim.keymap.set('n', '<leader>wv', function() split_keep_focus('vsplit') end, { desc = 'Split window vertically' })
